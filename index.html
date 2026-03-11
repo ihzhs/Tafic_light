@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Traffic Light</title>
+
+<style>
+
+body{
+  background:#111;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  color:white;
+  font-family:sans-serif;
+}
+
+.traffic{
+  background:#222;
+  padding:20px;
+  border-radius:20px;
+}
+
+.light{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#333;
+  margin:10px;
+}
+
+.active.red{ background:red }
+.active.yellow{ background:yellow }
+.active.green{ background:lime }
+
+button{
+  margin-top:30px;
+  padding:15px 30px;
+  font-size:18px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>🚦 Traffic Light</h2>
+
+<div class="traffic">
+<div id="red" class="light"></div>
+<div id="yellow" class="light"></div>
+<div id="green" class="light"></div>
+</div>
+
+<button onclick="sync()">SYNC</button>
+
+<script>
+
+const cycle = 90
+const green = 24
+const yellow = 3
+
+let start = localStorage.getItem("start")
+
+function sync(){
+  start = Date.now()/1000
+  localStorage.setItem("start", start)
+}
+
+function update(){
+
+  if(!start) return
+
+  const now = Date.now()/1000
+  const t = (now - start) % cycle
+
+  red.classList.remove("active")
+  yellow.classList.remove("active")
+  green.classList.remove("active")
+
+  if(t < green){
+    green.classList.add("active","green")
+  }
+  else if(t < green + yellow){
+    yellow.classList.add("active","yellow")
+  }
+  else{
+    red.classList.add("active","red")
+  }
+
+}
+
+setInterval(update,1000)
+
+</script>
+
+</body>
+</html>
