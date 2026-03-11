@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <meta charset="UTF-8">
 <title>Traffic Light</title>
@@ -8,13 +9,13 @@
 
 body{
   background:#111;
+  font-family:sans-serif;
+  color:white;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   height:100vh;
-  color:white;
-  font-family:sans-serif;
 }
 
 .traffic{
@@ -28,8 +29,12 @@ body{
   height:80px;
   border-radius:50%;
   background:#333;
-  margin:10px;
+  margin:15px auto;
 }
+
+.red{ background:#330000 }
+.yellow{ background:#333000 }
+.green{ background:#003300 }
 
 .active.red{ background:red }
 .active.yellow{ background:yellow }
@@ -38,7 +43,14 @@ body{
 button{
   margin-top:30px;
   padding:15px 30px;
-  font-size:18px;
+  font-size:20px;
+  border-radius:10px;
+  border:none;
+}
+
+#timer{
+  margin-top:20px;
+  font-size:28px;
 }
 
 </style>
@@ -49,29 +61,45 @@ button{
 <h2>🚦 Traffic Light</h2>
 
 <div class="traffic">
-<div id="red" class="light"></div>
-<div id="yellow" class="light"></div>
-<div id="green" class="light"></div>
+
+<div id="red" class="light red"></div>
+<div id="yellow" class="light yellow"></div>
+<div id="green" class="light green"></div>
+
 </div>
+
+<div id="timer">Press SYNC</div>
 
 <button onclick="sync()">SYNC</button>
 
 <script>
 
-const cycle = 90
-const green = 24
-const yellow = 3
+const greenDuration = 24
+const yellowDuration = 3
+const redDuration = 63
+
+const cycle = greenDuration + yellowDuration + redDuration
 
 let start = localStorage.getItem("start")
 
+const red = document.getElementById("red")
+const yellow = document.getElementById("yellow")
+const green = document.getElementById("green")
+const timer = document.getElementById("timer")
+
 function sync(){
+
   start = Date.now()/1000
   localStorage.setItem("start", start)
+
 }
 
 function update(){
 
-  if(!start) return
+  if(!start){
+    timer.innerText = "Press SYNC"
+    return
+  }
 
   const now = Date.now()/1000
   const t = (now - start) % cycle
@@ -80,19 +108,32 @@ function update(){
   yellow.classList.remove("active")
   green.classList.remove("active")
 
-  if(t < green){
-    green.classList.add("active","green")
+  let remaining
+
+  if(t < greenDuration){
+
+    green.classList.add("active")
+    remaining = Math.ceil(greenDuration - t)
+
   }
-  else if(t < green + yellow){
-    yellow.classList.add("active","yellow")
+  else if(t < greenDuration + yellowDuration){
+
+    yellow.classList.add("active")
+    remaining = Math.ceil(greenDuration + yellowDuration - t)
+
   }
   else{
-    red.classList.add("active","red")
+
+    red.classList.add("active")
+    remaining = Math.ceil(cycle - t)
+
   }
+
+  timer.innerText = remaining + " sec"
 
 }
 
-setInterval(update,1000)
+setInterval(update,100)
 
 </script>
 
